@@ -4,7 +4,7 @@ def projectFolderName = "${PROJECT_NAME}"
 
 // Variables
 def referenceAppgitRepo = "spring-petclinic"
-def regressionTestGitRepo = "spring-petclinic-regression-tests"
+def regressionTestGitRepo = "adop-cartridge-java-regression-tests"
 def referenceAppGitUrl = "ssh://jenkins@gerrit:29418/${PROJECT_NAME}/" + referenceAppgitRepo
 def regressionTestGitUrl = "ssh://jenkins@gerrit:29418/${PROJECT_NAME}/" + regressionTestGitRepo
 

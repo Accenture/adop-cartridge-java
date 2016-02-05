@@ -3,7 +3,7 @@ def workspaceFolderName = "${WORKSPACE_NAME}"
 def projectFolderName = "${PROJECT_NAME}"
 
 // Variables
-def environmentTemplateGitUrl = "ssh://jenkins@gerrit:29418/${PROJECT_NAME}/spring-petclinic-environment-template"
+def environmentTemplateGitUrl = "ssh://jenkins@gerrit:29418/${PROJECT_NAME}/adop-cartridge-java-environment-template"
 
 // Jobs
 def environmentProvisioningPipelineView = buildPipelineView(projectFolderName + "/Environment_Provisioning")
