@@ -216,7 +216,7 @@ deployJob.with{
             |docker cp ${WORKSPACE}/target/petclinic.war  ${SERVICE_NAME}:/usr/local/tomcat/webapps/
             |docker restart ${SERVICE_NAME}
             |COUNT=1
-            |while ! wget --quiet -O /dev/null http://${SERVICE_NAME}:8080/petclinic
+            |while ! curl -q http://${SERVICE_NAME}:8080/petclinic -o /dev/null 
             |do
             |  if [ ${COUNT} -gt 10 ]; then
             |      echo "Docker build failed even after ${COUNT}. Please investigate."
