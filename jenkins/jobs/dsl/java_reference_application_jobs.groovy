@@ -117,12 +117,11 @@ unitTestJob.with{
       }
     }
     maven{
-      goals('clean test -DskipTests')
+      goals('clean test')
       mavenInstallation("ADOP Maven")
     }
   }
   publishers{
-    archiveArtifacts("**/*")
     downstreamParameterized{
       trigger(projectFolderName + "/Reference_Application_Code_Analysis"){
         condition("UNSTABLE_OR_BETTER")
