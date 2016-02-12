@@ -173,6 +173,7 @@ sonar.scm.enabled=false''')
       jdk('(Inherit From Job)')
       task()
     }
+	
   }
   publishers{
     downstreamParameterized{
@@ -245,6 +246,16 @@ deployJob.with{
       }
     }
   }
+  configure { myProject ->
+    myProject / builderWrappers << 'org.jenkinsci.plugins.environmentdashboard.DashboardBuilder'(plugin:"environment-dashboard@1.1.3"){
+      nameOfEnv('$ENVIRONMENT_NAME')
+      componentName('Java')
+	  buildNumber('$B')
+      buildJob()
+      packageName()
+      data()
+	  addColumns()
+    }
 }
 
 regressionTestJob.with{
