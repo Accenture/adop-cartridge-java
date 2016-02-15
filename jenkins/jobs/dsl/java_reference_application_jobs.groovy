@@ -235,7 +235,7 @@ deployJob.with{
   }
   
   configure { myProject ->
-    myProject / builderWrappers << 'org.jenkinsci.plugins.environmentdashboard.DashboardBuilder'(plugin:"environment-dashboard@1.1.3"){
+    myProject / buildWrappers << 'org.jenkinsci.plugins.environmentdashboard.DashboardBuilder'(plugin:"environment-dashboard@1.1.3"){
       nameOfEnv('${ENVIRONMENT_NAME}')
       componentName('Java')
 	  buildNumber('${B}')
