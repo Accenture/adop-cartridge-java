@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Accenture/adop-cartridge-java.svg?branch=master)](https://travis-ci.org/Accenture/adop-cartridge-java)
+
 # What is Cartridge?
 
 A Cartridge is a set of resources that are loaded into the Platform for a particular project. They may contain anything from a simple reference implementation for a technology to a set of best practice examples for building, deploying, and managing a technology stack that can be used by a project.
