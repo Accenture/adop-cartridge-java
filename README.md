@@ -8,7 +8,7 @@ This cartridge consists of source code repositories and jenkins jobs.
 
 ## Source code repositories
 
-Cartrige loads the source code repositories
+Cartridge loads the source code repositories
 
 * [spring-petclinic](https://github.com/spring-projects/spring-petclinic.git)
 * [adop-cartridge-java-regression-tests](https://github.com/Accenture/adop-cartridge-java-regression-tests)
@@ -25,6 +25,19 @@ This cartridge generates the jenkins jobs and pipeline views to -
 * Deploy to an environment.
 * Run regression tests on deployed petclinic application.
 
+## Testing
+
+For unit tests we are using [Spock framework](https://github.com/spockframework/spock) specifications.
+
+`./gradlew test` runs the specs.
+
+By default Spock generates reports in two formats XML and HTML.
+
+* ./build/test-results/* - XML format.
+* ./build/reports/tests/* - HTML format.
+
+[JobScriptsSpec](src/test/groovy/com/java/cartridge/JobScriptsSpec.groovy) 
+will loop through all DSL files and make sure they don't throw any exceptions when processed.
 
 # License
 Please view [license information](LICENSE.md) for the software contained on this image.
