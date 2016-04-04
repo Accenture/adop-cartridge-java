@@ -1,0 +1,16 @@
+language: groovy
+
+jdk:
+    - openjdk7
+    - oraclejdk7
+    - oraclejdk8
+
+cache:
+    directories:
+        - $HOME/.gradle
+
+script:
+    - ./gradlew check
+
+after_failure:
+    - ./gradlew clean check --debug
