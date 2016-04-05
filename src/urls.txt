@@ -1,3 +1,3 @@
-https://github.com/spring-projects/spring-petclinic.git
+https://github.com/Accenture/spring-petclinic.git
 https://github.com/Accenture/adop-cartridge-java-regression-tests.git
 https://github.com/Accenture/adop-cartridge-java-environment-template.git
