@@ -304,11 +304,62 @@ class RegressionTestsReferenceApplicationJobSpec extends Specification {
             installation = "ADOP Maven"
     }
 
-    def 'pipeline automatic trigger not exists'() {
-        expect:
-            node.publishers.size() == 1
-            node.publishers['hudson.plugins.parameterizedtrigger.BuildTrigger'].size() == 0
-    }
+
+      def 'pipeline automatic trigger exists'() {
+          expect:
+              node.publishers.size() == 1
+              node.publishers['hudson.plugins.parameterizedtrigger.BuildTrigger'].size() == 1
+      }
+
+      @Unroll
+      def 'downstream parameterized trigger on "#triggerJobName" job exists'() {
+          expect:
+              with(node.publishers['hudson.plugins.parameterizedtrigger.BuildTrigger']['configs']['hudson.plugins.parameterizedtrigger.BuildTriggerConfig']) {
+                  projects.size() == 1
+
+                  with(projects) {
+                      text() == triggerJobName
+                  }
+              }
+
+          where:
+              triggerJobName = "${helper.projectName}/Reference_Application_Performance_Tests"
+      }
+
+      @Unroll
+      def 'downstream parameterized trigger condition is "#triggerCondition"'() {
+          expect:
+              with(node.publishers['hudson.plugins.parameterizedtrigger.BuildTrigger']['configs']['hudson.plugins.parameterizedtrigger.BuildTriggerConfig']) {
+                  condition.size() == 1
+
+                  with(condition) {
+                      text() == triggerCondition
+                  }
+              }
+
+          where:
+              triggerCondition = "UNSTABLE_OR_BETTER"
+      }
+
+      @Unroll
+      def 'downstream parameterized trigger with predefined parameter "#key=#value" exists'() {
+          expect:
+              with(node.publishers['hudson.plugins.parameterizedtrigger.BuildTrigger']['configs']['hudson.plugins.parameterizedtrigger.BuildTriggerConfig']) {
+                  triggerWithNoParameters.size() == 1
+                  triggerWithNoParameters.text() == 'false'
+
+                  configs['hudson.plugins.parameterizedtrigger.PredefinedBuildParameters'].size() == 1
+
+                  with(configs['hudson.plugins.parameterizedtrigger.PredefinedBuildParameters']) {
+                      properties.text().contains("${key}=${value}")
+                  }
+              }
+
+          where:
+              key            | value
+              'B'            | '${B}'
+              'PARENT_BUILD' | '${PARENT_BUILD}'
+      }
 
     def 'post build "Publish cucumber results as a report" with default settings exists'() {
         expect:
