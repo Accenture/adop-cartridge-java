@@ -298,7 +298,7 @@ class RegressionTestsReferenceApplicationJobSpec extends Specification {
             }
 
         where:
-            goal = 'clean test -B -DPETCLINIC_URL=http://${SERVICE_NAME}:8080/petclinic'
+            goal = 'clean -B test -DPETCLINIC_URL=${APP_URL} -DZAP_IP=${ZAP_IP} -DZAP_PORT=${ZAP_PORT} -DZAP_ENABLED=${ZAP_ENABLED}'
     }
 
     @Unroll
