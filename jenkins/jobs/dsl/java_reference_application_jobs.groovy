@@ -57,20 +57,9 @@ buildAppJob.with {
             events {
                 refUpdated()
             }
-            configure { gerritxml ->
-                gerritxml / 'gerritProjects' {
-                    'com.sonyericsson.hudson.plugins.gerrit.trigger.hudsontrigger.data.GerritProject' {
-                        compareType("PLAIN")
-                        pattern(projectFolderName + "/" + referenceAppgitRepo)
-                        'branches' {
-                            'com.sonyericsson.hudson.plugins.gerrit.trigger.hudsontrigger.data.Branch' {
-                                compareType("PLAIN")
-                                pattern("master")
-                            }
-                        }
-                    }
-                }
-                gerritxml / serverName("ADOP Gerrit")
+            project(projectFolderName + '/' + referenceAppgitRepo, 'plain:master')
+            configure { node ->
+                node / serverName("ADOP Gerrit")
             }
         }
     }
