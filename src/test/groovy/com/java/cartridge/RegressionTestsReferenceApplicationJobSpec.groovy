@@ -231,22 +231,31 @@ class RegressionTestsReferenceApplicationJobSpec extends Specification {
             branchName = '*/master'
     }
 
-    def 'steps with three configuration blocks exists'() {
+    @Unroll
+    def 'steps with #configBlocksNum configuration blocks exists'() {
         expect:
             node.builders.size() == 1
 
             with(node.builders[0]) {
-                children().size() == 3
+                children().size() == configBlocksNum
             }
+
+        where:
+            configBlocksNum = 4
     }
 
-    def 'step shell with command block exists'() {
+    @Unroll
+    def 'steps, #shellBlocksNum shell with #commandBlocksNum command blocks exists'() {
         expect:
-            node.builders['hudson.tasks.Shell'].size() == 1
+            node.builders['hudson.tasks.Shell'].size() == shellBlocksNum
 
             with(node.builders['hudson.tasks.Shell']) {
-                command.size() == 1
+                command.size() == shellBlocksNum
             }
+
+        where:
+            shellBlocksNum = 2
+            commandBlocksNum = 2
     }
 
     def 'step inject environmentVariables exists'() {
