@@ -29,7 +29,8 @@ class CreateEnvironmentJobSpec extends Specification {
             node.properties['hudson.model.ParametersDefinitionProperty'].size() == 1
     }
 
-    def '"ENVIRONMENT_NAME" string parameter with "CI" as default value exists'() {
+    @Unroll
+    def '"#parameterName" choice parameter exists'() {
         expect:
             node.properties['hudson.model.ParametersDefinitionProperty']['parameterDefinitions'].size() == 1
 
@@ -37,22 +38,40 @@ class CreateEnvironmentJobSpec extends Specification {
                 children().size() == 1
 
                 with(children()[0]) {
-                    name() == 'hudson.model.StringParameterDefinition'
+                    name() == 'hudson.model.ChoiceParameterDefinition'
                     children().size() == 3
 
-                    with (name) {
-                        text() == 'ENVIRONMENT_NAME'
+                    with(name) {
+                        text() == parameterName
                     }
 
-                    with (description) {
-                        text() == 'Name of the environment to be created.'
-                    }
-
-                    with (defaultValue) {
-                        text() == 'CI'
+                    with(description) {
+                        text() == 'Create Environment for development(named: CI) or production (named: PRODA and PRODB)'
                     }
                 }
             }
+
+        where:
+            parameterName = 'ENVIRONMENT_TYPE'
+    }
+
+    @Unroll
+    def '"ENVIRONMENT_TYPE" choice parameter contains "#choiceValue" value'() {
+        expect:
+            with(node.properties['hudson.model.ParametersDefinitionProperty']['parameterDefinitions']['hudson.model.ChoiceParameterDefinition'][0]) {
+                with(choices) {
+                    with(value()['a'][0]) {
+                        with(children().getAt(key)) {
+                            text() == choiceValue
+                        }
+                    }
+                }
+            }
+
+        where:
+            key | choiceValue
+            0   | 'DEV'
+            1   | 'PROD'
     }
 
     def 'workspace_name and project_name env variables injected'() {
