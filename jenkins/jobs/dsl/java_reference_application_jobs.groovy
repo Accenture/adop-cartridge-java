@@ -206,6 +206,13 @@ deployJob.with{
       env('WORKSPACE_NAME',workspaceFolderName)
       env('PROJECT_NAME',projectFolderName)
   }
+
+  configure { project ->
+          project / 'properties'/'EnvInjectJobProperty'/ info <<{
+                 groovyScriptContent  'matcher = JENKINS_URL =~ /http:\\/\\/(.*?)\\/jenkins.*/; def map = [STACK_IP: matcher[0][1]]; return map;'
+          }
+  }
+
   label("docker")
   steps {
     copyArtifacts("Reference_Application_Build") {
@@ -230,7 +237,7 @@ deployJob.with{
             |done
             |echo "=.=.=.=.=.=.=.=.=.=.=.=."
             |echo "=.=.=.=.=.=.=.=.=.=.=.=."
-            |echo "Environment URL (replace PUBLIC_IP with your public ip address where you access jenkins from) : http://${SERVICE_NAME}.PUBLIC_IP.xip.io/petclinic"
+            |echo "Environment URL: http://${SERVICE_NAME}.${STACK_IP}.xip.io/petclinic"
             |echo "=.=.=.=.=.=.=.=.=.=.=.=."
             |echo "=.=.=.=.=.=.=.=.=.=.=.=."
             |set -x'''.stripMargin())
@@ -299,7 +306,7 @@ regressionTestJob.with{
             |mkdir -p ${JOB_WORKSPACE_PATH}/owasp_zap_proxy/test-results
             |docker run -it -d --net=$DOCKER_NETWORK_NAME -v ${JOB_WORKSPACE_PATH}/owasp_zap_proxy/test-results/:/opt/zaproxy/test-results/ --name ${CONTAINER_NAME} -P nhantd/owasp_zap start zap-test
             |
-            |sleep 30s
+            |sleep 5s
             |ZAP_IP=$( docker inspect --format '{{ .NetworkSettings.Networks.'"$DOCKER_NETWORK_NAME"'.IPAddress }}' ${CONTAINER_NAME} )
             |echo "ZAP_IP =  $ZAP_IP"
             |echo ZAP_IP=$ZAP_IP >> env.properties
@@ -357,7 +364,6 @@ regressionTestJob.with{
             }
         }
     }
-
 }
 
 performanceTestJob.with{
@@ -459,6 +465,12 @@ deployJobToProdA.with{
       env('WORKSPACE_NAME',workspaceFolderName)
       env('PROJECT_NAME',projectFolderName)
   }
+  configure { project ->
+          project / 'properties'/'EnvInjectJobProperty'/ info <<{
+                 groovyScriptContent  'matcher = JENKINS_URL =~ /http:\\/\\/(.*?)\\/jenkins.*/; def map = [STACK_IP: matcher[0][1]]; return map;'
+          }
+  }
+
   label("docker")
   steps {
     copyArtifacts("Reference_Application_Build") {
@@ -483,7 +495,7 @@ deployJobToProdA.with{
             |done
             |echo "=.=.=.=.=.=.=.=.=.=.=.=."
             |echo "=.=.=.=.=.=.=.=.=.=.=.=."
-            |echo "Environment URL (replace PUBLIC_IP with your public ip address where you access jenkins from) : http://${SERVICE_NAME}.PUBLIC_IP.xip.io/petclinic"
+            |echo "Environment URL: http://${SERVICE_NAME}.${STACK_IP}.xip.io/petclinic"
             |echo "=.=.=.=.=.=.=.=.=.=.=.=."
             |echo "=.=.=.=.=.=.=.=.=.=.=.=."
             |set -x'''.stripMargin())
@@ -516,6 +528,11 @@ deployJobToProdB.with{
       env('WORKSPACE_NAME',workspaceFolderName)
       env('PROJECT_NAME',projectFolderName)
   }
+  configure { project ->
+          project / 'properties'/'EnvInjectJobProperty'/ info <<{
+                 groovyScriptContent  'matcher = JENKINS_URL =~ /http:\\/\\/(.*?)\\/jenkins.*/; def map = [STACK_IP: matcher[0][1]]; return map;'
+          }
+  }
   label("docker")
   steps {
     copyArtifacts("Reference_Application_Build") {
@@ -539,11 +556,9 @@ deployJobToProdB.with{
             |done
             |echo "=.=.=.=.=.=.=.=.=.=.=.=."
             |echo "=.=.=.=.=.=.=.=.=.=.=.=."
-            |echo "Environment URL (replace PUBLIC_IP with your public ip address where you access jenkins from) : http://${SERVICE_NAME}.PUBLIC_IP.xip.io/petclinic"
+            |echo "Environment URL: http://${SERVICE_NAME}.${STACK_IP}.xip.io/petclinic"
             |echo "=.=.=.=.=.=.=.=.=.=.=.=."
             |echo "=.=.=.=.=.=.=.=.=.=.=.=."
             |set -x'''.stripMargin())
-
   }
-
 }
