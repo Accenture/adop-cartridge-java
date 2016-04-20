@@ -231,22 +231,31 @@ class RegressionTestsReferenceApplicationJobSpec extends Specification {
             branchName = '*/master'
     }
 
-    def 'steps with three configuration blocks exists'() {
+    @Unroll
+    def 'steps with #configBlocksNum configuration blocks exists'() {
         expect:
             node.builders.size() == 1
 
             with(node.builders[0]) {
-                children().size() == 3
+                children().size() == configBlocksNum
             }
+
+        where:
+            configBlocksNum = 4
     }
 
-    def 'step shell with command block exists'() {
+    @Unroll
+    def 'steps, #shellBlocksNum shell with #commandBlocksNum command blocks exists'() {
         expect:
-            node.builders['hudson.tasks.Shell'].size() == 1
+            node.builders['hudson.tasks.Shell'].size() == shellBlocksNum
 
             with(node.builders['hudson.tasks.Shell']) {
-                command.size() == 1
+                command.size() == shellBlocksNum
             }
+
+        where:
+            shellBlocksNum = 2
+            commandBlocksNum = 2
     }
 
     def 'step inject environmentVariables exists'() {
@@ -289,7 +298,7 @@ class RegressionTestsReferenceApplicationJobSpec extends Specification {
             }
 
         where:
-            goal = 'clean test -B -DPETCLINIC_URL=http://${SERVICE_NAME}:8080/petclinic'
+            goal = 'clean -B test -DPETCLINIC_URL=${APP_URL} -DZAP_IP=${ZAP_IP} -DZAP_PORT=${ZAP_PORT} -DZAP_ENABLED=${ZAP_ENABLED}'
     }
 
     @Unroll
@@ -304,62 +313,61 @@ class RegressionTestsReferenceApplicationJobSpec extends Specification {
             installation = "ADOP Maven"
     }
 
+    def 'pipeline automatic trigger exists'() {
+        expect:
+            node.publishers.size() == 1
+            node.publishers['hudson.plugins.parameterizedtrigger.BuildTrigger'].size() == 1
+    }
 
-      def 'pipeline automatic trigger exists'() {
-          expect:
-              node.publishers.size() == 1
-              node.publishers['hudson.plugins.parameterizedtrigger.BuildTrigger'].size() == 1
-      }
+    @Unroll
+    def 'downstream parameterized trigger on "#triggerJobName" job exists'() {
+        expect:
+            with(node.publishers['hudson.plugins.parameterizedtrigger.BuildTrigger']['configs']['hudson.plugins.parameterizedtrigger.BuildTriggerConfig']) {
+                projects.size() == 1
 
-      @Unroll
-      def 'downstream parameterized trigger on "#triggerJobName" job exists'() {
-          expect:
-              with(node.publishers['hudson.plugins.parameterizedtrigger.BuildTrigger']['configs']['hudson.plugins.parameterizedtrigger.BuildTriggerConfig']) {
-                  projects.size() == 1
+                with(projects) {
+                    text() == triggerJobName
+                }
+            }
 
-                  with(projects) {
-                      text() == triggerJobName
-                  }
-              }
+        where:
+            triggerJobName = "${helper.projectName}/Reference_Application_Performance_Tests"
+    }
 
-          where:
-              triggerJobName = "${helper.projectName}/Reference_Application_Performance_Tests"
-      }
+    @Unroll
+    def 'downstream parameterized trigger condition is "#triggerCondition"'() {
+        expect:
+            with(node.publishers['hudson.plugins.parameterizedtrigger.BuildTrigger']['configs']['hudson.plugins.parameterizedtrigger.BuildTriggerConfig']) {
+                condition.size() == 1
 
-      @Unroll
-      def 'downstream parameterized trigger condition is "#triggerCondition"'() {
-          expect:
-              with(node.publishers['hudson.plugins.parameterizedtrigger.BuildTrigger']['configs']['hudson.plugins.parameterizedtrigger.BuildTriggerConfig']) {
-                  condition.size() == 1
+                with(condition) {
+                    text() == triggerCondition
+                }
+            }
 
-                  with(condition) {
-                      text() == triggerCondition
-                  }
-              }
+        where:
+            triggerCondition = "UNSTABLE_OR_BETTER"
+    }
 
-          where:
-              triggerCondition = "UNSTABLE_OR_BETTER"
-      }
+    @Unroll
+    def 'downstream parameterized trigger with predefined parameter "#key=#value" exists'() {
+        expect:
+            with(node.publishers['hudson.plugins.parameterizedtrigger.BuildTrigger']['configs']['hudson.plugins.parameterizedtrigger.BuildTriggerConfig']) {
+                triggerWithNoParameters.size() == 1
+                triggerWithNoParameters.text() == 'false'
 
-      @Unroll
-      def 'downstream parameterized trigger with predefined parameter "#key=#value" exists'() {
-          expect:
-              with(node.publishers['hudson.plugins.parameterizedtrigger.BuildTrigger']['configs']['hudson.plugins.parameterizedtrigger.BuildTriggerConfig']) {
-                  triggerWithNoParameters.size() == 1
-                  triggerWithNoParameters.text() == 'false'
+                configs['hudson.plugins.parameterizedtrigger.PredefinedBuildParameters'].size() == 1
 
-                  configs['hudson.plugins.parameterizedtrigger.PredefinedBuildParameters'].size() == 1
+                with(configs['hudson.plugins.parameterizedtrigger.PredefinedBuildParameters']) {
+                    properties.text().contains("${key}=${value}")
+                }
+            }
 
-                  with(configs['hudson.plugins.parameterizedtrigger.PredefinedBuildParameters']) {
-                      properties.text().contains("${key}=${value}")
-                  }
-              }
-
-          where:
-              key            | value
-              'B'            | '${B}'
-              'PARENT_BUILD' | '${PARENT_BUILD}'
-      }
+        where:
+            key            | value
+            'B'            | '${B}'
+            'PARENT_BUILD' | '${PARENT_BUILD}'
+    }
 
     def 'post build "Publish cucumber results as a report" with default settings exists'() {
         expect:
