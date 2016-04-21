@@ -3,6 +3,7 @@ def workspaceFolderName = "${WORKSPACE_NAME}"
 def projectFolderName = "${PROJECT_NAME}"
 
 // Variables
+def projectNameKey = projectFolderName.toLowerCase().replace("/", "-")
 def referenceAppgitRepo = "spring-petclinic"
 def regressionTestGitRepo = "adop-cartridge-java-regression-tests"
 def referenceAppGitUrl = "ssh://jenkins@gerrit:29418/${PROJECT_NAME}/" + referenceAppgitRepo
@@ -133,6 +134,7 @@ codeAnalysisJob.with {
     environmentVariables {
         env('WORKSPACE_NAME', workspaceFolderName)
         env('PROJECT_NAME', projectFolderName)
+        env('PROJECT_NAME_KEY', projectNameKey)
     }
     wrappers {
         preBuildCleanup()
@@ -151,9 +153,9 @@ codeAnalysisJob.with {
     configure { myProject ->
         myProject / builders << 'hudson.plugins.sonar.SonarRunnerBuilder'(plugin: "sonar@2.2.1") {
             project('sonar-project.properties')
-            properties('''sonar.projectKey=org.java.reference-application
-sonar.projectName=Reference application
-sonar.projectVersion=1.0.0
+            properties('''sonar.projectKey=${PROJECT_NAME_KEY}
+sonar.projectName=${PROJECT_NAME}
+sonar.projectVersion=1.0.${B}
 sonar.sources=src
 sonar.language=java
 sonar.sourceEncoding=UTF-8

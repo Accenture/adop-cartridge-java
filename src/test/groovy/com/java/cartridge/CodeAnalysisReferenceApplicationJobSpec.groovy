@@ -81,7 +81,7 @@ class CodeAnalysisReferenceApplicationJobSpec extends Specification {
             }
     }
 
-    def 'workspace_name and project_name env variables injected'() {
+    def 'workspace_name, project_name and project_name_key env variables injected'() {
         expect:
             node.properties.EnvInjectJobProperty.size() == 1
 
@@ -92,7 +92,7 @@ class CodeAnalysisReferenceApplicationJobSpec extends Specification {
                     propertiesContent.size() == 1
 
                     with(propertiesContent) {
-                        text() == "WORKSPACE_NAME=${workspaceName}\nPROJECT_NAME=${projectName}"
+                        text() == "WORKSPACE_NAME=${workspaceName}\nPROJECT_NAME=${projectName}\nPROJECT_NAME_KEY=${projectNameKey}"
                     }
                 }
             }
@@ -100,6 +100,7 @@ class CodeAnalysisReferenceApplicationJobSpec extends Specification {
         where:
             workspaceName = helper.workspaceName
             projectName = helper.projectName
+            projectNameKey = helper.projectName.toLowerCase().replace("/", "-")
     }
 
     def 'job assigned to java8 node'() {
@@ -217,9 +218,9 @@ class CodeAnalysisReferenceApplicationJobSpec extends Specification {
                 properties.size() == 1
 
                 with(properties) {
-                    text() == "sonar.projectKey=org.java.reference-application\n" +
-                        "sonar.projectName=Reference application\n" +
-                        "sonar.projectVersion=1.0.0\n" +
+                    text() == 'sonar.projectKey=${PROJECT_NAME_KEY}' + "\n" +
+                        'sonar.projectName=${PROJECT_NAME}' + "\n" +
+                        'sonar.projectVersion=1.0.${B}' + "\n" +
                         "sonar.sources=src\n" +
                         "sonar.language=java\n" +
                         "sonar.sourceEncoding=UTF-8\n" +
