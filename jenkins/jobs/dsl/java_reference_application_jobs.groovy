@@ -198,6 +198,7 @@ deployJob.with {
         copyArtifacts("Reference_Application_Build") {
             buildSelector {
                 buildNumber('${B}')
+                includePatterns('target/petclinic.war')
             }
         }
         shell('''set +x
@@ -452,6 +453,7 @@ deployJobToProdA.with {
         copyArtifacts("Reference_Application_Build") {
             buildSelector {
                 buildNumber('${B}')
+                includePatterns('target/petclinic.war')
             }
         }
         shell('''
@@ -509,6 +511,7 @@ deployJobToProdB.with {
         copyArtifacts("Reference_Application_Build") {
             buildSelector {
                 buildNumber('${B}')
+                includePatterns('target/petclinic.war')
             }
         }
         shell('''|export SERVICE_NAME="$(echo ${PROJECT_NAME} | tr '/' '_')_${ENVIRONMENT_NAME}"
