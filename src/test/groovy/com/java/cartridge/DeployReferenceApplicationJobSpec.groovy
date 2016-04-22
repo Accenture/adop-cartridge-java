@@ -230,6 +230,21 @@ class DeployReferenceApplicationJobSpec extends Specification {
             jenkinsJobName = 'Reference_Application_Build'
     }
 
+    @Unroll
+    def 'Copy Artifacts include pattern specified only on "#includePattern" file'() {
+        expect:
+            with(node.builders['hudson.plugins.copyartifact.CopyArtifact']) {
+                filter.size() == 1
+
+                with(filter) {
+                    text() == includePattern
+                }
+            }
+
+        where:
+            includePattern = 'target/petclinic.war'
+    }
+
     def 'pipeline automatic trigger exists'() {
         expect:
             node.publishers.size() == 1
