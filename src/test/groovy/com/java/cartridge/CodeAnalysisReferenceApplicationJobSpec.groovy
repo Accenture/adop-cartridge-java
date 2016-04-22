@@ -192,7 +192,7 @@ class CodeAnalysisReferenceApplicationJobSpec extends Specification {
             }
 
         where:
-            jenkinsJobName = 'Reference_Application_Build'
+            jenkinsJobName = 'Reference_Application_Unit_Tests'
     }
 
     def 'step SonarQube configuration block exists'() {
@@ -221,7 +221,7 @@ class CodeAnalysisReferenceApplicationJobSpec extends Specification {
                     text() == 'sonar.projectKey=${PROJECT_NAME_KEY}' + "\n" +
                         'sonar.projectName=${PROJECT_NAME}' + "\n" +
                         'sonar.projectVersion=1.0.${B}' + "\n" +
-                        "sonar.sources=src\n" +
+                        "sonar.sources=src/main/java\n" +
                         "sonar.language=java\n" +
                         "sonar.sourceEncoding=UTF-8\n" +
                         "sonar.scm.enabled=false"

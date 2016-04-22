@@ -113,6 +113,7 @@ unitTestJob.with {
         }
     }
     publishers {
+        archiveArtifacts("**/*")
         downstreamParameterized {
             trigger(projectFolderName + "/Reference_Application_Code_Analysis") {
                 condition("UNSTABLE_OR_BETTER")
@@ -144,7 +145,7 @@ codeAnalysisJob.with {
     }
     label("java8")
     steps {
-        copyArtifacts('Reference_Application_Build') {
+        copyArtifacts('Reference_Application_Unit_Tests') {
             buildSelector {
                 buildNumber('${B}')
             }
@@ -156,7 +157,7 @@ codeAnalysisJob.with {
             properties('''sonar.projectKey=${PROJECT_NAME_KEY}
 sonar.projectName=${PROJECT_NAME}
 sonar.projectVersion=1.0.${B}
-sonar.sources=src
+sonar.sources=src/main/java
 sonar.language=java
 sonar.sourceEncoding=UTF-8
 sonar.scm.enabled=false''')
