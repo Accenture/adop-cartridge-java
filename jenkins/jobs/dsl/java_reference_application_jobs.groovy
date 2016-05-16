@@ -285,7 +285,7 @@ regressionTestJob.with {
             |echo ZAP_PORT=$ZAP_PORT >> env.properties
             |
             |echo "Starting OWASP ZAP Intercepting Proxy"
-            |JOB_WORKSPACE_PATH="/var/lib/docker/volumes/jenkins_slave_home/_data/ExampleWorkspace/ExampleProject/Reference_Application_Regression_Tests"
+            |JOB_WORKSPACE_PATH="/var/lib/docker/volumes/jenkins_slave_home/_data/${PROJECT_NAME}/Reference_Application_Regression_Tests"
             |#JOB_WORKSPACE_PATH="$(docker inspect --format '{{ .Mounts.Networks.'"$DOCKER_NETWORK_NAME"'.IPAddress }}' ${CONTAINER_NAME} )/${JOB_NAME}"
             |echo JOB_WORKSPACE_PATH=$JOB_WORKSPACE_PATH >> env.properties
             |mkdir -p ${JOB_WORKSPACE_PATH}/owasp_zap_proxy/test-results
