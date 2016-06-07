@@ -289,7 +289,7 @@ regressionTestJob.with {
             |#JOB_WORKSPACE_PATH="$(docker inspect --format '{{ .Mounts.Networks.'"$DOCKER_NETWORK_NAME"'.IPAddress }}' ${CONTAINER_NAME} )/${JOB_NAME}"
             |echo JOB_WORKSPACE_PATH=$JOB_WORKSPACE_PATH >> env.properties
             |mkdir -p ${JOB_WORKSPACE_PATH}/owasp_zap_proxy/test-results
-            |docker run -it -d --net=$DOCKER_NETWORK_NAME -v ${JOB_WORKSPACE_PATH}/owasp_zap_proxy/test-results/:/opt/zaproxy/test-results/ --name ${CONTAINER_NAME} -P nhantd/owasp_zap start zap-test
+            |docker run -it -d --net=$DOCKER_NETWORK_NAME -v ${JOB_WORKSPACE_PATH}/owasp_zap_proxy/test-results/:/opt/zaproxy/test-results/ -e affinity:container==jenkins-slave --name ${CONTAINER_NAME} -P nhantd/owasp_zap start zap-test
             |
             |sleep 30s
             |ZAP_IP=$( docker inspect --format '{{ .NetworkSettings.Networks.'"$DOCKER_NETWORK_NAME"'.IPAddress }}' ${CONTAINER_NAME} )
@@ -311,7 +311,7 @@ regressionTestJob.with {
             |docker stop ${CONTAINER_NAME}
             |docker rm ${CONTAINER_NAME}
             |
-            |docker run -i --net=$DOCKER_NETWORK_NAME -v ${JOB_WORKSPACE_PATH}/owasp_zap_proxy/test-results/:/opt/zaproxy/test-results/ --name ${CONTAINER_NAME} -P nhantd/owasp_zap stop zap-test
+            |docker run -i --net=$DOCKER_NETWORK_NAME -v ${JOB_WORKSPACE_PATH}/owasp_zap_proxy/test-results/:/opt/zaproxy/test-results/ -e affinity:container==jenkins-slave --name ${CONTAINER_NAME} -P nhantd/owasp_zap stop zap-test
             |docker cp ${CONTAINER_NAME}:/opt/zaproxy/test-results/zap-test-report.html .
             |sleep 10s
             |docker rm ${CONTAINER_NAME}
