@@ -383,7 +383,7 @@ performanceTestJob.with {
             |if [ -e ../apache-jmeter-2.13.tgz ]; then
             |	cp ../apache-jmeter-2.13.tgz $JMETER_TESTDIR
             |else
-            |	wget http://www.apache.org/dist/jmeter/binaries/apache-jmeter-2.13.tgz
+            |	wget https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-2.13.tgz
             |    cp apache-jmeter-2.13.tgz ../
             |    mv apache-jmeter-2.13.tgz $JMETER_TESTDIR
             |fi
