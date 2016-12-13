@@ -588,40 +588,25 @@ owaspDepCheckJob.with {
         }
     }
 
-    configure { project ->
-        project / 'publishers' / 'org.jenkinsci.plugins.DependencyCheck.DependencyCheckPublisher'(plugin: 'dependency-check-jenkins-plugin@1.4.4') {
-            healthy ''
-            unHealthy ''
-            thresholdLimit 'low'
-            pluginName '[DependencyCheck]'
-            defaultEncoding ''
-            canRunOnFailed 'false'
-            usePreviousBuildAsReference 'false'
-            useStableBuildAsReference 'false'
-            useDeltaValues 'false'
-            thresholds (plugin: 'analysis-core@1.79') {
-                unstableTotalAll ''
-                unstableTotalHigh ''
-                unstableTotalNormal ''
-                unstableTotalLow ''
-                unstableNewAll ''
-                unstableNewHigh ''
-                unstableNewNormal ''
-                unstableNewLow ''
-                failedTotalAll ''
-                failedTotalHigh '0'
-                failedTotalNormal ''
-                failedTotalLow ''
-                failedNewAll ''
-                failedNewHigh ''
-                failedNewNormal ''
-                failedNewLow ''
-            }
-            shouldDetectModules false
-            dontComputeNew true
-            doNotResolveRelativePaths false
-            pattern ''
+
+    publishers {
+        dependencyCheck('') {
+            thresholdLimit('low')
+            canRunOnFailed(false)
+            useStableBuildAsReference(false)
+            useDeltaValues(false)
+            computeNew(false)
+            shouldDetectModules(false)
+            thresholds(
+                    unstableTotal: [all: '', high: '', normal: '', low: ''],
+                    failedTotal: [all: '', high: 0, normal: '', low: ''],
+                    unstableNew: [all: '', high: '', normal: '', low: ''],
+                    failedNew: [all: '', high: '', normal: '', low: '']
+            )
         }
     }
+
 }
+
+
 
