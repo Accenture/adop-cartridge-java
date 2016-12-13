@@ -18,6 +18,7 @@ def regressionTestJob = freeStyleJob(projectFolderName + "/Reference_Application
 def performanceTestJob = freeStyleJob(projectFolderName + "/Reference_Application_Performance_Tests")
 def deployJobToProdA = freeStyleJob(projectFolderName + "/Reference_Application_Deploy_ProdA")
 def deployJobToProdB = freeStyleJob(projectFolderName + "/Reference_Application_Deploy_ProdB")
+def owaspDepCheckJob = freeStyleJob(projectFolderName + "/OWASP_Dependency_Check")
 
 // Views
 def pipelineView = buildPipelineView(projectFolderName + "/Java_Reference_Application")
@@ -145,7 +146,7 @@ codeAnalysisJob.with {
     }
     label("java8")
     steps {
-        copyArtifacts('Reference_Application_Unit_Tests') {
+        copyArtifacts('Reference_Application_Build') {
             buildSelector {
                 buildNumber('${B}')
             }
@@ -540,3 +541,87 @@ deployJobToProdB.with {
         )
     }
 }
+
+owaspDepCheckJob.with {
+    description("This job uses the OWASP Dependency Check plugin to check for CVEs in the application dependencies.")
+    wrappers {
+        preBuildCleanup()
+        injectPasswords()
+        maskPasswords()
+        sshAgent("adop-jenkins-master")
+    }
+    scm {
+        git {
+            remote {
+                url(referenceAppGitUrl)
+                credentials("adop-jenkins-master")
+            }
+            branch("*/master")
+        }
+    }
+    environmentVariables {
+        env('WORKSPACE_NAME', workspaceFolderName)
+        env('PROJECT_NAME', projectFolderName)
+    }
+    label("java8")
+
+    steps {
+        maven {
+            goals('clean install -DskipTests')
+            mavenInstallation("ADOP Maven")
+        }
+    }
+
+    configure { project ->
+        project / 'builders' / 'org.jenkinsci.plugins.DependencyCheck.DependencyCheckBuilder'(plugin: 'dependency-check-jenkins-plugin@1.4.4') {
+            skipOnScmChange false
+            skipOnUpstreamChange false
+            scanpath ''
+            outdir ''
+            datadir ''
+            suppressionFile ''
+            zipExtensions ''
+            isAutoupdateDisabled false
+            isVerboseLoggingEnabled false
+            includeHtmlReports false
+            useMavenArtifactsScanPath false
+        }
+    }
+
+    configure { project ->
+        project / 'publishers' / 'org.jenkinsci.plugins.DependencyCheck.DependencyCheckPublisher'(plugin: 'dependency-check-jenkins-plugin@1.4.4') {
+            healthy ''
+            unHealthy ''
+            thresholdLimit 'low'
+            pluginName '[DependencyCheck]'
+            defaultEncoding ''
+            canRunOnFailed 'false'
+            usePreviousBuildAsReference 'false'
+            useStableBuildAsReference 'false'
+            useDeltaValues 'false'
+            thresholds (plugin: 'analysis-core@1.79') {
+                unstableTotalAll ''
+                unstableTotalHigh ''
+                unstableTotalNormal ''
+                unstableTotalLow ''
+                unstableNewAll ''
+                unstableNewHigh ''
+                unstableNewNormal ''
+                unstableNewLow ''
+                failedTotalAll ''
+                failedTotalHigh '0'
+                failedTotalNormal ''
+                failedTotalLow ''
+                failedNewAll ''
+                failedNewHigh ''
+                failedNewNormal ''
+                failedNewLow ''
+            }
+            shouldDetectModules false
+            dontComputeNew true
+            doNotResolveRelativePaths false
+            pattern ''
+        }
+    }
+}
+

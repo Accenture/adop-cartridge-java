@@ -192,7 +192,7 @@ class CodeAnalysisReferenceApplicationJobSpec extends Specification {
             }
 
         where:
-            jenkinsJobName = 'Reference_Application_Unit_Tests'
+            jenkinsJobName = 'Reference_Application_Build'
     }
 
     def 'step SonarQube configuration block exists'() {
