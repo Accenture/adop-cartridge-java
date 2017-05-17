@@ -120,6 +120,7 @@ unitTestJob.with {
                 parameters {
                     predefinedProp("B", '${B}')
                     predefinedProp("PARENT_BUILD", '${PARENT_BUILD}')
+                    predefinedProp("UTB", '${BUILD_NUMBER}')
                 }
             }
         }
@@ -131,6 +132,7 @@ codeAnalysisJob.with {
     parameters {
         stringParam("B", '', "Parent build number")
         stringParam("PARENT_BUILD", "Reference_Application_Build", "Parent build name")
+        stringParam("UTB", '', "Unit Tests job build number")
     }
     environmentVariables {
         env('WORKSPACE_NAME', workspaceFolderName)
@@ -147,7 +149,7 @@ codeAnalysisJob.with {
     steps {
         copyArtifacts('Reference_Application_Unit_Tests') {
             buildSelector {
-                buildNumber('${B}')
+                buildNumber('${UTB}')
             }
         }
     }
