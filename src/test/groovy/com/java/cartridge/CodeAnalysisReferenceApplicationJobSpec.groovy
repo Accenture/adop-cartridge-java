@@ -34,7 +34,7 @@ class CodeAnalysisReferenceApplicationJobSpec extends Specification {
             node.properties['hudson.model.ParametersDefinitionProperty']['parameterDefinitions'].size() == 1
 
             with(node.properties['hudson.model.ParametersDefinitionProperty']['parameterDefinitions'][0]) {
-                children().size() == 2
+                children().size() == 3
 
                 with(children()[0]) {
                     name() == 'hudson.model.StringParameterDefinition'
@@ -60,7 +60,7 @@ class CodeAnalysisReferenceApplicationJobSpec extends Specification {
             node.properties['hudson.model.ParametersDefinitionProperty']['parameterDefinitions'].size() == 1
 
             with(node.properties['hudson.model.ParametersDefinitionProperty']['parameterDefinitions'][0]) {
-                children().size() == 2
+                children().size() == 3
 
                 with(children()[1]) {
                     name() == 'hudson.model.StringParameterDefinition'
@@ -76,6 +76,32 @@ class CodeAnalysisReferenceApplicationJobSpec extends Specification {
 
                     with (defaultValue) {
                         text() == 'Reference_Application_Build'
+                    }
+                }
+            }
+    }
+    
+    def 'job parameters, "UTB" string parameter without default value exists'() {
+        expect:
+            node.properties['hudson.model.ParametersDefinitionProperty']['parameterDefinitions'].size() == 1
+
+            with(node.properties['hudson.model.ParametersDefinitionProperty']['parameterDefinitions'][0]) {
+                children().size() == 3
+
+                with(children()[2]) {
+                    name() == 'hudson.model.StringParameterDefinition'
+                    children().size() == 3
+
+                    with (name) {
+                        text() == 'UTB'
+                    }
+
+                    with (description) {
+                        text() == 'Unit Tests job build number'
+                    }
+
+                    with (defaultValue) {
+                        text() == ''
                     }
                 }
             }
@@ -177,7 +203,7 @@ class CodeAnalysisReferenceApplicationJobSpec extends Specification {
             }
 
         where:
-            buildNumberRef = '${B}'
+            buildNumberRef = '${UTB}'
     }
 
     @Unroll
