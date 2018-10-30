@@ -1,13 +1,16 @@
+import pluggable.scm.*;
+
+SCMProvider scmProvider = SCMProviderHandler.getScmProvider("${SCM_PROVIDER_ID}", binding.variables)
+
 // Folders
 def workspaceFolderName = "${WORKSPACE_NAME}"
 def projectFolderName = "${PROJECT_NAME}"
+def projectScmNamespace = "${SCM_NAMESPACE}"
 
 // Variables
 def projectNameKey = projectFolderName.toLowerCase().replace("/", "-")
 def referenceAppgitRepo = "spring-petclinic"
-def regressionTestGitRepo = "adop-cartridge-java-regression-tests"
-def referenceAppGitUrl = "ssh://jenkins@gerrit:29418/${PROJECT_NAME}/" + referenceAppgitRepo
-def regressionTestGitUrl = "ssh://jenkins@gerrit:29418/${PROJECT_NAME}/" + regressionTestGitRepo
+def regressionTestGitRepo =  "adop-cartridge-java-regression-tests"
 
 // Jobs
 def buildAppJob = freeStyleJob(projectFolderName + "/Reference_Application_Build")
@@ -39,31 +42,13 @@ buildAppJob.with {
         maskPasswords()
         sshAgent("adop-jenkins-master")
     }
-    scm {
-        git {
-            remote {
-                url(referenceAppGitUrl)
-                credentials("adop-jenkins-master")
-            }
-            branch("*/master")
-        }
-    }
+    scm scmProvider.get(projectScmNamespace, referenceAppgitRepo, "*/master", "adop-jenkins-master", null)
     environmentVariables {
         env('WORKSPACE_NAME', workspaceFolderName)
         env('PROJECT_NAME', projectFolderName)
     }
     label("java8")
-    triggers {
-        gerrit {
-            events {
-                refUpdated()
-            }
-            project(projectFolderName + '/' + referenceAppgitRepo, 'plain:master')
-            configure { node ->
-                node / serverName("ADOP Gerrit")
-            }
-        }
-    }
+    triggers scmProvider.trigger(projectScmNamespace, referenceAppgitRepo, 'plain:master')
     steps {
         maven {
             goals('clean install -DskipTests')
@@ -250,15 +235,7 @@ regressionTestJob.with {
         stringParam("PARENT_BUILD", "Reference_Application_Build", "Parent build name")
         stringParam("ENVIRONMENT_NAME", "CI", "Name of the environment.")
     }
-    scm {
-        git {
-            remote {
-                url(regressionTestGitUrl)
-                credentials("adop-jenkins-master")
-            }
-            branch("*/master")
-        }
-    }
+    scm scmProvider.get(projectScmNamespace, regressionTestGitRepo, "*/master", "adop-jenkins-master", null)
     wrappers {
         preBuildCleanup()
         injectPasswords()
