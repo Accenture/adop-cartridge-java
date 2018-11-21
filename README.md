@@ -6,6 +6,10 @@ A Cartridge is a set of resources that are loaded into the Platform for a partic
 
 This cartridge consists of source code repositories and jenkins jobs.
 
+## Prerequisites
+
+* Make sure [adop-pluggable-scm](https://github.com/Accenture/adop-pluggable-scm) is loaded into your ADOP/C.
+
 ## Source code repositories
 
 Cartridge loads the source code repositories
