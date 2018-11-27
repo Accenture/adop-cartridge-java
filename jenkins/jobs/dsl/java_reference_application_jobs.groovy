@@ -50,10 +50,7 @@ buildAppJob.with {
     label("java8")
     triggers scmProvider.trigger(projectScmNamespace, referenceAppgitRepo, 'plain:master')
     steps {
-        maven {
-            goals('clean install -DskipTests')
-            mavenInstallation("ADOP Maven")
-        }
+        shell('''./mvnw clean install -DskipTests''')
     }
     publishers {
         archiveArtifacts("**/*")
@@ -92,10 +89,7 @@ unitTestJob.with {
                 buildNumber('${B}')
             }
         }
-        maven {
-            goals('clean test')
-            mavenInstallation("ADOP Maven")
-        }
+        shell('''./mvnw clean test''')
     }
     publishers {
         archiveArtifacts("**/*")
@@ -281,10 +275,7 @@ regressionTestJob.with {
         environmentVariables {
             propertiesFile('env.properties')
         }
-        maven {
-            goals('clean -B test -DPETCLINIC_URL=${APP_URL} -DZAP_IP=${ZAP_IP} -DZAP_PORT=${ZAP_PORT} -DZAP_ENABLED=${ZAP_ENABLED}')
-            mavenInstallation("ADOP Maven")
-        }
+        shell('''./mvnw clean -B test -DPETCLINIC_URL=${APP_URL} -DZAP_IP=${ZAP_IP} -DZAP_PORT=${ZAP_PORT} -DZAP_ENABLED=${ZAP_ENABLED}''')
         shell('''
             |echo "Stopping OWASP ZAP Proxy and generating report."
             |docker stop ${CONTAINER_NAME}
@@ -387,10 +378,7 @@ performanceTestJob.with {
             |sed -i "s/###TOKEN_RESPONSE_TIME###/10000/g" ${WORKSPACE}/src/test/scala/default/RecordedSimulation.scala
             |'''.stripMargin()
         )
-        maven {
-            goals('gatling:execute')
-            mavenInstallation('ADOP Maven')
-        }
+        shell('''./mvnw gatling:execute''')
     }
     publishers {
         publishHtml {
