@@ -48,7 +48,7 @@ buildAppJob.with {
         env('PROJECT_NAME', projectFolderName)
     }
     label("java8")
-    triggers scmProvider.trigger(projectScmNamespace, referenceAppgitRepo, 'plain:master')
+    triggers scmProvider.trigger(projectScmNamespace, referenceAppgitRepo, 'master')
     steps {
         maven {
             goals('clean install -DskipTests')
